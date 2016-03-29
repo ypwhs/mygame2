@@ -26,7 +26,7 @@ class GameScene: SKScene,SKPhysicsContactDelegate {
         if motionManager.accelerometerAvailable {
             motionManager.accelerometerUpdateInterval = spd
             motionManager.startAccelerometerUpdates()
-            NSTimer.scheduledTimerWithTimeInterval(spd, target: self, selector: "refresh", userInfo: nil, repeats: true)
+            NSTimer.scheduledTimerWithTimeInterval(spd, target: self, selector: #selector(GameScene.refresh), userInfo: nil, repeats: true)
             labelx.position = CGPoint(x: 200, y: 700)
             labely.position = CGPoint(x: 200, y: 650)
             rand()
@@ -37,17 +37,17 @@ class GameScene: SKScene,SKPhysicsContactDelegate {
     }
     
     func rand(){
-        ran = Int(arc4random()%(imgs.count+4))
+        ran = Int(arc4random())%(imgs.count + 4)
         if ran >= imgs.count{
-            var sprite = SKSpriteNode(imageNamed: imgs[0])
+            let sprite = SKSpriteNode(imageNamed: imgs[0])
             sprite.xScale = 0.3
             sprite.yScale = 0.3
             
-            var circle = SKShapeNode(circleOfRadius: 50)
+            let circle = SKShapeNode(circleOfRadius: 50)
             circle.position = CGPoint(x: sprite.size.width, y: -sprite.size.height)
             sprite.addChild(circle)
             
-            var circle2 = SKShapeNode(circleOfRadius: 50)
+            let circle2 = SKShapeNode(circleOfRadius: 50)
             circle2.position = CGPoint(x: -sprite.size.width, y: -sprite.size.height)
             
             sprite.addChild(circle2)
@@ -60,7 +60,7 @@ class GameScene: SKScene,SKPhysicsContactDelegate {
             self.addChild(tishi)
             
         }else {
-            var sprite = SKSpriteNode(imageNamed: imgs[Int(ran)])
+            let sprite = SKSpriteNode(imageNamed: imgs[Int(ran)])
             sprite.xScale = 0.3
             sprite.yScale = 0.3
             sprite.position = CGPoint(x: 100, y: 100)
@@ -81,7 +81,6 @@ class GameScene: SKScene,SKPhysicsContactDelegate {
         {
             let x = a.acceleration.x
             let y = a.acceleration.y
-            let z = a.acceleration.z
             
             if Double.abs(x) < 0.1 && Double.abs(y) < 0.1{
                 gravity = 0
@@ -99,7 +98,8 @@ class GameScene: SKScene,SKPhysicsContactDelegate {
             labely.text = "y=\(gy)"
         }
     }
-    override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
+    
+    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
         if touches.count == 4{
             self.removeAllChildren()
             self.backgroundColor=SKColor.blackColor()
@@ -112,7 +112,7 @@ class GameScene: SKScene,SKPhysicsContactDelegate {
         }else {
             for touch: AnyObject in touches {
                 if ran >= imgs.count{
-                    var sprite = SKSpriteNode(imageNamed: imgs[0])
+                    let sprite = SKSpriteNode(imageNamed: imgs[0])
                     sprite.xScale = 0.3
                     sprite.yScale = 0.3
                     sprite.name = "车"
@@ -124,7 +124,7 @@ class GameScene: SKScene,SKPhysicsContactDelegate {
                     sprite.physicsBody?.contactTestBitMask = 0xFFFF
                     sprite.physicsBody?.friction=0.6
                     
-                    var circle = SKShapeNode(circleOfRadius: 50)
+                    let circle = SKShapeNode(circleOfRadius: 50)
                     circle.position = CGPoint(x: sprite.size.width, y: -sprite.size.height)
 //                    circle.name = "轮"
                     circle.physicsBody = SKPhysicsBody(circleOfRadius: 50)
@@ -132,7 +132,7 @@ class GameScene: SKScene,SKPhysicsContactDelegate {
                     circle.physicsBody?.mass = 1
                     sprite.addChild(circle)
                     
-                    var circle2 = SKShapeNode(circleOfRadius: 50)
+                    let circle2 = SKShapeNode(circleOfRadius: 50)
                     
                     circle2.position = CGPoint(x: -sprite.size.width, y: -sprite.size.height)
 //                    circle2.name = "轮"
@@ -145,7 +145,7 @@ class GameScene: SKScene,SKPhysicsContactDelegate {
                     self.addChild(sprite)
                     
                 }else {
-                    var sprite = SKSpriteNode(imageNamed: imgs[Int(ran)])
+                    let sprite = SKSpriteNode(imageNamed: imgs[Int(ran)])
                     sprite.xScale = 0.3
                     sprite.yScale = 0.3
                     sprite.name=imgs[Int(ran)]
@@ -171,11 +171,11 @@ class GameScene: SKScene,SKPhysicsContactDelegate {
     func didBeginContact(contact: SKPhysicsContact) {
         if var nodea = contact.bodyA.node{
             if var nodeb = contact.bodyB.node{
-                if var namea = nodea.name {
-                    if var nameb = nodeb.name{
+                if let namea = nodea.name {
+                    if let nameb = nodeb.name{
                         if namea != nameb{
                             if nameb == "车"{
-                                var tmp = nodea
+                                let tmp = nodea
                                 nodea=nodeb
                                 nodeb=tmp
                             }
@@ -185,12 +185,12 @@ class GameScene: SKScene,SKPhysicsContactDelegate {
                                 nodeb.runAction(SKAction.rotateToAngle(0, duration: 0))
                                 nodea.speed=0
                                 nodeb.speed=0
-                                self.physicsWorld.addJoint(SKPhysicsJointPin.jointWithBodyA(nodea.physicsBody, bodyB: nodeb.physicsBody, anchor: CGPoint(x: nodea.position.x-nodeb.frame.width/2, y: nodea.position.y+nodeb.frame.height/2)))
-                                self.physicsWorld.addJoint(SKPhysicsJointPin.jointWithBodyA(nodea.physicsBody, bodyB: nodeb.physicsBody, anchor: CGPoint(x: nodea.position.x+nodeb.frame.width/2, y: nodea.position.y+nodeb.frame.height/2)))
+                                self.physicsWorld.addJoint(SKPhysicsJointPin.jointWithBodyA(nodea.physicsBody!, bodyB: nodeb.physicsBody!, anchor: CGPoint(x: nodea.position.x-nodeb.frame.width/2, y: nodea.position.y+nodeb.frame.height/2)))
+                                self.physicsWorld.addJoint(SKPhysicsJointPin.jointWithBodyA(nodea.physicsBody!, bodyB: nodeb.physicsBody!, anchor: CGPoint(x: nodea.position.x+nodeb.frame.width/2, y: nodea.position.y+nodeb.frame.height/2)))
                                 
                                 nodea.name=nil
                                 nodeb.name=nil
-                                println("\(namea),\(nameb)")
+                                print("\(namea),\(nameb)")
                             })
                         }
                     }
